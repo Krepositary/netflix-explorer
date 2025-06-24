@@ -4,26 +4,43 @@ import numpy as np
 import plotly.express as px
 from collections import Counter
 
-# Set up the Streamlit page
+# --- Page Setup ---
 st.set_page_config(page_title="Netflix Explorer", layout="wide", page_icon="🎬")
 st.title("🎬 Netflix Explorer Dashboard")
 st.markdown("Explore Netflix content by genre, rating, year and more 📺")
 
-# 🔽 Hardcoded sample Netflix data
+# --- Embedded Clean Data ---
 @st.cache_data
 def load_data():
     data = {
-        "title": ["The Social Dilemma", "Breaking Bad", "Stranger Things", "The Crown", "Our Planet", 
-                  "Bridgerton", "The Irishman", "Black Mirror", "Narcos", "BoJack Horseman"],
-        "type": ["Movie", "TV Show", "TV Show", "TV Show", "TV Show", 
-                 "TV Show", "Movie", "TV Show", "TV Show", "TV Show"],
-        "release_year": [2020, 2008, 2016, 2016, 2019, 
-                         2020, 2019, 2011, 2015, 2014],
-        "rating": ["PG-13", "TV-MA", "TV-14", "TV-MA", "TV-G", 
-                   "TV-MA", "R", "TV-MA", "TV-MA", "TV-MA"],
-        "listed_in": ["Documentaries, Social & Cultural Docs", "Crime TV Shows, Drama", "Horror, Drama", "Drama, British", 
-                      "Science & Nature Docs", "Romance, Drama", "Crime, Drama", "Sci-Fi & Fantasy, Drama", 
-                      "Crime, Thriller", Animation, Comedy"]
+        "title": [
+            "The Social Dilemma", "Breaking Bad", "Stranger Things", "The Crown", "Our Planet", 
+            "Bridgerton", "The Irishman", "Black Mirror", "Narcos", "The Magic Pencil"
+        ],
+        "type": [
+            "Movie", "TV Show", "TV Show", "TV Show", "TV Show", 
+            "TV Show", "Movie", "TV Show", "TV Show", "TV Show"
+        ],
+        "release_year": [
+            2020, 2008, 2016, 2016, 2019, 
+            2020, 2019, 2011, 2015, 2018
+        ],
+        "rating": [
+            "PG-13", "TV-MA", "TV-14", "TV-MA", "TV-G", 
+            "TV-MA", "R", "TV-MA", "TV-MA", "TV-Y7"
+        ],
+        "listed_in": [
+            "Documentaries, Social & Cultural Docs",
+            "Crime TV Shows, Drama",
+            "Horror, Drama",
+            "Drama, British",
+            "Science & Nature Docs",
+            "Romance, Drama",
+            "Crime, Drama",
+            "Sci-Fi & Fantasy, Drama",
+            "Crime, Thriller",
+            "Animated, Comedy"
+        ]
     }
     df = pd.DataFrame(data)
     np.random.seed(42)
@@ -37,7 +54,6 @@ st.sidebar.header("🔍 Filter Options")
 
 content_type = st.sidebar.multiselect("📂 Select Type:", df["type"].unique(), default=df["type"].unique())
 
-# Extract unique genres from all listed_in entries
 all_genres = sorted(set(genre.strip() for sublist in df['listed_in'].str.split(',') for genre in sublist))
 genres = st.sidebar.multiselect("🎭 Select Genre:", all_genres, default=all_genres[:4])
 
@@ -45,7 +61,7 @@ rating_range = st.sidebar.slider("⭐ Simulated Rating:", 0.0, 10.0, (4.0, 9.5),
 min_year, max_year = int(df["release_year"].min()), int(df["release_year"].max())
 year_range = st.sidebar.slider("📅 Year Range:", min_year, max_year, (min_year, max_year))
 
-# --- Filtering logic ---
+# --- Filtering Logic ---
 def has_selected_genre(row_genres):
     return any(genre in row_genres for genre in genres)
 
@@ -58,9 +74,12 @@ filtered_df = df[
 
 st.success(f"✅ {filtered_df.shape[0]} titles found matching your filters.")
 
-# --- Show filtered table ---
+# --- Display Filtered Table ---
 st.subheader("📋 Filtered Netflix Titles")
-st.dataframe(filtered_df[["title", "type", "release_year", "rating", "listed_in", "simulated_rating"]], use_container_width=True)
+st.dataframe(
+    filtered_df[["title", "type", "release_year", "rating", "listed_in", "simulated_rating"]],
+    use_container_width=True
+)
 
 # --- Plot: Type Count ---
 fig1 = px.histogram(filtered_df, x="type", color="type", title="Content Type Distribution", text_auto=True)
