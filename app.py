@@ -23,7 +23,7 @@ def load_data():
                    "TV-MA", "R", "TV-MA", "TV-MA", "TV-MA"],
         "listed_in": ["Documentaries, Social & Cultural Docs", "Crime TV Shows, Drama", "Horror, Drama", "Drama, British", 
                       "Science & Nature Docs", "Romance, Drama", "Crime, Drama", "Sci-Fi & Fantasy, Drama", 
-                      "Crime, Thriller", "Adult Animation, Comedy"]
+                      "Crime, Thriller", Animation, Comedy"]
     }
     df = pd.DataFrame(data)
     np.random.seed(42)
